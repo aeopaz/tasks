@@ -1,4 +1,4 @@
-package com.example.flutter_task_planner_app
+package com.example.bizzytasks_app
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

@@ -1,25 +1,19 @@
+import 'dart:convert';
+
+import 'package:bizzytasks_app/models/task_model.dart';
+import 'package:bizzytasks_app/models/user_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_planner_app/screens/calendar_page.dart';
-import 'package:flutter_task_planner_app/theme/colors/light_colors.dart';
+import 'package:bizzytasks_app/screens/calendar_page.dart';
+import 'package:bizzytasks_app/theme/colors/light_colors.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:flutter_task_planner_app/widgets/task_column.dart';
-import 'package:flutter_task_planner_app/widgets/active_project_card.dart';
-import 'package:flutter_task_planner_app/widgets/top_container.dart';
+import 'package:bizzytasks_app/widgets/task_column.dart';
+import 'package:bizzytasks_app/widgets/active_project_card.dart';
+import 'package:bizzytasks_app/widgets/top_container/top_container.dart';
+import 'package:bizzytasks_app/widgets/top_container/user_info.dart';
 
-class HomePage extends StatelessWidget {
-  //Subtitulos
-  Text subheading(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-          color: LightColors.kDarkBlue,
-          fontSize: 20.0,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2),
-    );
-  }
+class HomePage extends StatefulWidget {
+  static const id = 'home';
 
-//Icono Calendario
   static CircleAvatar calendarIcon() {
     return CircleAvatar(
       radius: 25.0,
@@ -29,6 +23,31 @@ class HomePage extends StatelessWidget {
         size: 20.0,
         color: Colors.white,
       ),
+    );
+  }
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  User user = User();
+  Task tasks = Task();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  //Subtitulos
+  Text subheading(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+          color: LightColors.kDarkBlue,
+          fontSize: 20.0,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2),
     );
   }
 
@@ -64,6 +83,7 @@ class HomePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
+                          // Avatar usuario
                           CircularPercentIndicator(
                             radius: 50.0,
                             lineWidth: 5.0,
@@ -80,33 +100,19 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                child: Text(
-                                  'Sourav Suman',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontSize: 22.0,
-                                    color: LightColors.kDarkBlue,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                child: Text(
-                                  'App Developer',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.black45,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
+                          // Información Usuario
+                          FutureBuilder(
+                            future: user.getUser(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return userInfo(context, snapshot.data);
+                              }
+                              return CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.black),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     )
@@ -135,36 +141,69 @@ class HomePage extends StatelessWidget {
                                         builder: (context) => CalendarPage()),
                                   );
                                 },
-                                child: calendarIcon(),
+                                child: HomePage.calendarIcon(),
                               ),
                             ],
                           ),
-                          SizedBox(height: 15.0),
-                          TaskColumn(
-                            icon: Icons.alarm,
-                            iconBackgroundColor: LightColors.kRed,
-                            title: 'To Do',
-                            subtitle: '5 tasks now. 1 started',
-                          ),
-                          SizedBox(
-                            height: 15.0,
-                          ),
-                          TaskColumn(
-                            icon: Icons.blur_circular,
-                            iconBackgroundColor: LightColors.kDarkYellow,
-                            title: 'In Progress',
-                            subtitle: '1 tasks now. 1 started',
-                          ),
-                          SizedBox(height: 15.0),
-                          TaskColumn(
-                            icon: Icons.check_circle_outline,
-                            iconBackgroundColor: LightColors.kBlue,
-                            title: 'Done',
-                            subtitle: '18 tasks now. 13 started',
+                          // Resumen de tareas por estado
+                          FutureBuilder(
+                            future: tasks
+                                .getSummaryTasks(context: context, body: {}),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                dynamic data = snapshot.data;
+                                return Column(
+                                  children: [
+                                    SizedBox(height: 15.0),
+                                    TaskColumn(
+                                      icon: Icons.alarm,
+                                      iconBackgroundColor: LightColors.kRed,
+                                      title: 'Pendiente',
+                                      subtitle: tasks
+                                              .getTotals(
+                                                  data['data'], 'pendientes')
+                                              .toString() +
+                                          ' tareas por comenzar',
+                                    ),
+                                    SizedBox(
+                                      height: 15.0,
+                                    ),
+                                    TaskColumn(
+                                      icon: Icons.blur_circular,
+                                      iconBackgroundColor:
+                                          LightColors.kDarkYellow,
+                                      title: 'En proceso',
+                                      subtitle: tasks
+                                              .getTotals(
+                                                  data['data'], 'enProceso')
+                                              .toString() +
+                                          ' tareas iniciadas',
+                                    ),
+                                    SizedBox(height: 15.0),
+                                    TaskColumn(
+                                      icon: Icons.check_circle_outline,
+                                      iconBackgroundColor: LightColors.kBlue,
+                                      title: 'Finalizadas',
+                                      subtitle: tasks
+                                              .getTotals(
+                                                  data['data'], 'finalizadas')
+                                              .toString() +
+                                          ' tareas terminadas',
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.black),
+                                );
+                              }
+                            },
                           ),
                         ],
                       ),
                     ),
+                    // Resumen tareas por categoría
                     Container(
                       color: Colors.transparent,
                       padding: EdgeInsets.symmetric(
@@ -172,7 +211,7 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          subheading('Proyectos Activos'),
+                          subheading('Categorías'),
                           SizedBox(height: 5.0),
                           Row(
                             children: <Widget>[

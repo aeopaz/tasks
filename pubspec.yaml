@@ -1,4 +1,4 @@
-name: flutter_task_planner_app
+name: bizzytasks_app
 
 description: A new Flutter project.
 version: 1.0.0+1
@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.1
   percent_indicator: ^4.0.1
+  http: ^1.0.0
+  shared_preferences: ^2.1.2
   
 dev_dependencies:
   flutter_test:

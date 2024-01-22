@@ -1,6 +1,7 @@
+import 'package:bizzytasks_app/screens/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_planner_app/screens/home_page.dart';
-import 'package:flutter_task_planner_app/theme/colors/light_colors.dart';
+import 'package:bizzytasks_app/screens/home_page.dart';
+import 'package:bizzytasks_app/theme/colors/light_colors.dart';
 import 'package:flutter/services.dart';
 
 void main() {
@@ -21,12 +22,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: Theme.of(context).textTheme.apply(
-              bodyColor: LightColors.kDarkBlue,
-              displayColor: LightColors.kDarkBlue,
-              fontFamily: 'Poppins'
-            ),
+            bodyColor: LightColors.kDarkBlue,
+            displayColor: LightColors.kDarkBlue,
+            fontFamily: 'Poppins'),
       ),
-      home: HomePage(),
+      initialRoute: LoginPage.id,
+      routes: {
+        LoginPage.id: (context) => LoginPage(),
+        HomePage.id: (context) => HomePage()
+      },
+      // home: HomePage(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task_planner_app/theme/colors/light_colors.dart';
+import 'package:bizzytasks_app/theme/colors/light_colors.dart';
 
 class TopContainer extends StatelessWidget {
   final double height;

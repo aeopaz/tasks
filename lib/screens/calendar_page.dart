@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task_planner_app/dates_list.dart';
-import 'package:flutter_task_planner_app/theme/colors/light_colors.dart';
-import 'package:flutter_task_planner_app/widgets/calendar_dates.dart';
-import 'package:flutter_task_planner_app/widgets/task_container.dart';
-import 'package:flutter_task_planner_app/screens/create_new_task_page.dart';
-import 'package:flutter_task_planner_app/widgets/back_button.dart';
+import 'package:bizzytasks_app/utilities/dates_list.dart';
+import 'package:bizzytasks_app/theme/colors/light_colors.dart';
+import 'package:bizzytasks_app/widgets/calendar_dates.dart';
+import 'package:bizzytasks_app/widgets/task_container.dart';
+import 'package:bizzytasks_app/screens/create_new_task_page.dart';
+import 'package:bizzytasks_app/widgets/back_button.dart';
 
 class CalendarPage extends StatelessWidget {
   Widget _dashedText() {

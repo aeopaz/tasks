@@ -1,9 +1,12 @@
+import 'package:bizzytasks_app/widgets/my_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task_planner_app/theme/colors/light_colors.dart';
-import 'package:flutter_task_planner_app/widgets/top_container.dart';
-import 'package:flutter_task_planner_app/widgets/back_button.dart';
-import 'package:flutter_task_planner_app/widgets/my_text_field.dart';
-import 'package:flutter_task_planner_app/screens/home_page.dart';
+import 'package:bizzytasks_app/theme/colors/light_colors.dart';
+import 'package:bizzytasks_app/widgets/top_container/top_container.dart';
+import 'package:bizzytasks_app/widgets/back_button.dart';
+import 'package:bizzytasks_app/widgets/my_text_field.dart';
+import 'package:bizzytasks_app/screens/home_page.dart';
+
+import 'home_page.dart';
 
 class CreateNewTaskPage extends StatelessWidget {
   @override
@@ -43,7 +46,12 @@ class CreateNewTaskPage extends StatelessWidget {
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      MyTextField(label: 'Title'),
+                      MyTextField(
+                        label: 'Title',
+                        onChanged: (value) {
+                          print(value);
+                        },
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -52,6 +60,9 @@ class CreateNewTaskPage extends StatelessWidget {
                             child: MyTextField(
                               label: 'Date',
                               icon: downwardIcon,
+                              onChanged: (value) {
+                                print(value);
+                              },
                             ),
                           ),
                           HomePage.calendarIcon(),
@@ -74,12 +85,18 @@ class CreateNewTaskPage extends StatelessWidget {
                           child: MyTextField(
                         label: 'Start Time',
                         icon: downwardIcon,
+                        onChanged: (value) {
+                          print(value);
+                        },
                       )),
                       SizedBox(width: 40),
                       Expanded(
                         child: MyTextField(
                           label: 'End Time',
                           icon: downwardIcon,
+                          onChanged: (value) {
+                            print(value);
+                          },
                         ),
                       ),
                     ],
@@ -89,6 +106,9 @@ class CreateNewTaskPage extends StatelessWidget {
                     label: 'Description',
                     minLines: 3,
                     maxLines: 3,
+                    onChanged: (value) {
+                      print(value);
+                    },
                   ),
                   SizedBox(height: 20),
                   Container(
