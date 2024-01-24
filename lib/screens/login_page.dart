@@ -42,10 +42,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: LightColors.kLightYellow,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(60.0),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               'BizzyTasks',
@@ -54,9 +55,9 @@ class _LoginPageState extends State<LoginPage> {
                 fontSize: 30.0,
               ),
             ),
-            SizedBox(
-              height: 80.0,
-            ),
+            // SizedBox(
+            //   height: 80.0,
+            // ),
             MyTextField(
               label: "Email",
               icon: Icon(Icons.email),
@@ -75,9 +76,9 @@ class _LoginPageState extends State<LoginPage> {
                 validateField();
               },
             ),
-            SizedBox(
-              height: 50.0,
-            ),
+            // SizedBox(
+            //   height: 50.0,
+            // ),
             ButtonWidget(
                 tittleButton: 'Ingresar',
                 isLoading: isLoading,

@@ -30,20 +30,22 @@ class ActiveProjectsCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: CircularPercentIndicator(
-                animation: true,
-                radius: 75.0,
-                percent: loadingPercent,
-                lineWidth: 5.0,
-                circularStrokeCap: CircularStrokeCap.round,
-                backgroundColor: Colors.white10,
-                progressColor: Colors.white,
-                center: Text(
-                  '${(loadingPercent * 100).round()}%',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w700, color: Colors.white),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: CircularPercentIndicator(
+                  animation: true,
+                  radius: 50.0,
+                  percent: loadingPercent,
+                  lineWidth: 5.0,
+                  circularStrokeCap: CircularStrokeCap.round,
+                  backgroundColor: Colors.white10,
+                  progressColor: Colors.white,
+                  center: Text(
+                    '${(loadingPercent * 100).round()}%',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
                 ),
               ),
             ),
@@ -51,7 +53,7 @@ class ActiveProjectsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  title,
+                  organizeTitle(title),
                   style: TextStyle(
                     fontSize: 14.0,
                     color: Colors.white,
@@ -72,5 +74,14 @@ class ActiveProjectsCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  organizeTitle(title) {
+    String new_title =
+        title[0].toUpperCase() + title.substring(1, title.length).toLowerCase();
+    if (new_title.length > 10) {
+      return new_title.substring(0, 10) + '...';
+    }
+    return new_title;
   }
 }

@@ -1,46 +1,75 @@
+import 'package:bizzytasks_app/theme/colors/light_colors.dart';
+import 'package:bizzytasks_app/utilities/constants.dart';
+import 'package:bizzytasks_app/utilities/date.dart';
 import 'package:flutter/material.dart';
 
 class TaskContainer extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final Color boxColor;
-
-  TaskContainer({
-    required this.title,
-    required this.subtitle,
-    required this.boxColor,
-  });
+  final Map tasks;
+  // final String title;
+  // final String subtitle;
+  // final Color boxColor;
+  // title: tasksList[index]['ca102nombre'],
+  // subtitle: tasksList[index]['ca102descripcion'],
+  TaskContainer({required this.tasks
+      // required this.title,
+      // required this.subtitle,
+      // required this.boxColor,
+      });
 
   @override
   Widget build(BuildContext context) {
+    dynamic estadoTarea = kEstados[tasks['ca102estado']];
+    dynamic prioridad = kPrioridad[tasks['ca102prioridad']];
+    CustomDateFormat fechaVencimientoTarea =
+        CustomDateFormat(date: tasks['ca102fecha_ejecucion_estimada']);
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15.0),
       padding: EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                tasks['ca102nombre'] +
+                    ' (' +
+                    tasks['ca102fecha_ejecucion_estimada'] +
+                    ')',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Icon(prioridad[1])
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: Text(
-              subtitle,
+              tasks['ca102descripcion'],
+              maxLines: 1,
               style: TextStyle(
                 fontSize: 14.0,
                 color: Colors.black54,
                 fontWeight: FontWeight.w400,
               ),
             ),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(fechaVencimientoTarea.vencimiento()),
+              Text(estadoTarea[0]),
+            ],
           )
         ],
       ),
       decoration: BoxDecoration(
-          color: boxColor, borderRadius: BorderRadius.circular(30.0)),
+          color: estadoTarea[1], borderRadius: BorderRadius.circular(30.0)),
     );
   }
 }

@@ -13,6 +13,17 @@ class Task {
 
 //Totalizar las tareas
   getTotals(data, type) {
+    if (data.length == 0) return 0;
     return data.fold(0, (sum, tarea) => sum + tarea[type]);
+  }
+
+  //Obtener todas las tareas
+  Future<dynamic> getTasks({contex, body}) async {
+    NetworHelper networHelper =
+        NetworHelper(url: '/tasks', context: contex, body: body);
+
+    var decodeData = await networHelper.getData();
+
+    return decodeData;
   }
 }

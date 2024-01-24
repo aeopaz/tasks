@@ -1,8 +1,10 @@
+import 'package:bizzytasks_app/provider/list_app_provider.dart';
 import 'package:bizzytasks_app/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/screens/home_page.dart';
 import 'package:bizzytasks_app/theme/colors/light_colors.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -10,7 +12,10 @@ void main() {
     statusBarColor: Color(0xffffb969), // status bar color
   ));
 
-  return runApp(MyApp());
+  return runApp(ChangeNotifierProvider(
+    create: (_) => ListAppProvider(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

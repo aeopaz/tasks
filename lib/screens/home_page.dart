@@ -1,7 +1,7 @@
-import 'dart:convert';
-
+import 'package:bizzytasks_app/models/list_app_model.dart';
 import 'package:bizzytasks_app/models/task_model.dart';
 import 'package:bizzytasks_app/models/user_model.dart';
+import 'package:bizzytasks_app/provider/list_app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/screens/calendar_page.dart';
 import 'package:bizzytasks_app/theme/colors/light_colors.dart';
@@ -10,6 +10,7 @@ import 'package:bizzytasks_app/widgets/task_column.dart';
 import 'package:bizzytasks_app/widgets/active_project_card.dart';
 import 'package:bizzytasks_app/widgets/top_container/top_container.dart';
 import 'package:bizzytasks_app/widgets/top_container/user_info.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   static const id = 'home';
@@ -33,22 +34,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   User user = User();
   Task tasks = Task();
+  ListApp list = ListApp();
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _getListApp();
   }
 
-  //Subtitulos
-  Text subheading(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-          color: LightColors.kDarkBlue,
-          fontSize: 20.0,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2),
-    );
+//Obtener las listas que necesita la app
+  void _getListApp() async {
+    dynamic lists = await list.getList(context: context);
+    context.read<ListAppProvider>().setListApp(lists);
   }
 
   @override
@@ -120,137 +118,17 @@ class _HomePageState extends State<HomePage> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      color: Colors.transparent,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 10.0),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              subheading('Mis tareas'),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CalendarPage()),
-                                  );
-                                },
-                                child: HomePage.calendarIcon(),
-                              ),
-                            ],
-                          ),
-                          // Resumen de tareas por estado
-                          FutureBuilder(
-                            future: tasks
-                                .getSummaryTasks(context: context, body: {}),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                dynamic data = snapshot.data;
-                                return Column(
-                                  children: [
-                                    SizedBox(height: 15.0),
-                                    TaskColumn(
-                                      icon: Icons.alarm,
-                                      iconBackgroundColor: LightColors.kRed,
-                                      title: 'Pendiente',
-                                      subtitle: tasks
-                                              .getTotals(
-                                                  data['data'], 'pendientes')
-                                              .toString() +
-                                          ' tareas por comenzar',
-                                    ),
-                                    SizedBox(
-                                      height: 15.0,
-                                    ),
-                                    TaskColumn(
-                                      icon: Icons.blur_circular,
-                                      iconBackgroundColor:
-                                          LightColors.kDarkYellow,
-                                      title: 'En proceso',
-                                      subtitle: tasks
-                                              .getTotals(
-                                                  data['data'], 'enProceso')
-                                              .toString() +
-                                          ' tareas iniciadas',
-                                    ),
-                                    SizedBox(height: 15.0),
-                                    TaskColumn(
-                                      icon: Icons.check_circle_outline,
-                                      iconBackgroundColor: LightColors.kBlue,
-                                      title: 'Finalizadas',
-                                      subtitle: tasks
-                                              .getTotals(
-                                                  data['data'], 'finalizadas')
-                                              .toString() +
-                                          ' tareas terminadas',
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.black),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Resumen tareas por categoría
-                    Container(
-                      color: Colors.transparent,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          subheading('Categorías'),
-                          SizedBox(height: 5.0),
-                          Row(
-                            children: <Widget>[
-                              ActiveProjectsCard(
-                                cardColor: LightColors.kGreen,
-                                loadingPercent: 0.25,
-                                title: 'Medical App',
-                                subtitle: '9 hours progress',
-                              ),
-                              SizedBox(width: 20.0),
-                              ActiveProjectsCard(
-                                cardColor: LightColors.kRed,
-                                loadingPercent: 0.6,
-                                title: 'Making History Notes',
-                                subtitle: '20 hours progress',
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-                              ActiveProjectsCard(
-                                cardColor: LightColors.kDarkYellow,
-                                loadingPercent: 0.45,
-                                title: 'Sports App',
-                                subtitle: '5 hours progress',
-                              ),
-                              SizedBox(width: 20.0),
-                              ActiveProjectsCard(
-                                cardColor: LightColors.kBlue,
-                                loadingPercent: 0.9,
-                                title: 'Online Flutter Course',
-                                subtitle: '23 hours progress',
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                child: FutureBuilder(
+                  future: tasks.getSummaryTasks(context: context, body: {}),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      dynamic data = snapshot.data;
+                      dynamic summaryTasks = data['data'];
+                      return bodySummaryTasks(context, summaryTasks);
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
                 ),
               ),
             ),
@@ -258,5 +136,149 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+//Subtitulos
+  Text subheading(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+          color: LightColors.kDarkBlue,
+          fontSize: 20.0,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2),
+    );
+  }
+
+  //Cuerpo donde se encuentra el resumen de las tareas
+  Column bodySummaryTasks(BuildContext context, summaryTasks) {
+    return Column(
+      children: <Widget>[
+        Container(
+          color: Colors.transparent,
+          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  subheading('Mis tareas'),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CalendarPage(),
+                        ),
+                      );
+                    },
+                    child: HomePage.calendarIcon(),
+                  ),
+                ],
+              ),
+              // Resumen de tareas por estado
+              summaryTasksStatus(summaryTasks)
+            ],
+          ),
+        ),
+        // Resumen tareas por categoría
+        summaryTasksCategorie(summaryTasks),
+      ],
+    );
+  }
+
+  //Resumen tareas por estado
+  Column summaryTasksStatus(data) {
+    return Column(
+      children: [
+        SizedBox(height: 15.0),
+        TaskColumn(
+          icon: Icons.alarm,
+          iconBackgroundColor: LightColors.kRed,
+          title: 'Pendiente',
+          subtitle: tasks.getTotals(data, 'pendientes').toString() +
+              ' tareas por comenzar',
+        ),
+        SizedBox(
+          height: 15.0,
+        ),
+        TaskColumn(
+          icon: Icons.blur_circular,
+          iconBackgroundColor: LightColors.kDarkYellow,
+          title: 'En proceso',
+          subtitle: tasks.getTotals(data, 'enProceso').toString() +
+              ' tareas iniciadas',
+        ),
+        SizedBox(height: 15.0),
+        TaskColumn(
+          icon: Icons.check_circle_outline,
+          iconBackgroundColor: LightColors.kBlue,
+          title: 'Finalizadas',
+          subtitle: tasks.getTotals(data, 'finalizadas').toString() +
+              ' tareas terminadas',
+        ),
+      ],
+    );
+  }
+
+//Resumen tareas por categoría
+  Container summaryTasksCategorie(data) {
+    int itemCount = (data.length / 2).ceil();
+    return Container(
+      color: Colors.transparent,
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          subheading('Categorías'),
+          SizedBox(height: 5.0),
+          Container(
+            height: MediaQuery.of(context).size.height / 2,
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                final firstCardIndex = index * 2;
+                final secondCardIndex = firstCardIndex + 1;
+                final firstCard = data[firstCardIndex];
+                final secondCard = secondCardIndex < data.length
+                    ? data[secondCardIndex]
+                    : data[0];
+                return Row(
+                  children: [
+                    ActiveProjectsCard(
+                        cardColor: LightColors.kGreen,
+                        loadingPercent: _calcPercent(firstCard),
+                        title: firstCard['ca101nombre'],
+                        subtitle: _organizeSubtitle(firstCard)),
+                    SizedBox(width: 20.0),
+                    if (secondCardIndex < data.length)
+                      ActiveProjectsCard(
+                        cardColor: LightColors.kRed,
+                        loadingPercent: _calcPercent(secondCard),
+                        title: secondCard['ca101nombre'],
+                        subtitle: _organizeSubtitle(secondCard),
+                      ),
+                  ],
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  _calcPercent(infoCard) {
+    return infoCard['numTareas'] == 0
+        ? 0.0
+        : infoCard['finalizadas'] / infoCard['numTareas'];
+  }
+
+  _organizeSubtitle(infoCard) {
+    return infoCard['finalizadas'].toString() +
+        ' fin de ' +
+        infoCard['numTareas'].toString();
   }
 }
