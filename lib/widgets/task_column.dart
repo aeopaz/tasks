@@ -5,11 +5,13 @@ class TaskColumn extends StatelessWidget {
   final Color iconBackgroundColor;
   final String title;
   final String subtitle;
+  final Function() onTap;
   TaskColumn({
     required this.icon,
     required this.iconBackgroundColor,
     required this.title,
     required this.subtitle,
+    required this.onTap,
   });
   @override
   Widget build(BuildContext context) {
@@ -26,24 +28,27 @@ class TaskColumn extends StatelessWidget {
           ),
         ),
         SizedBox(width: 10.0),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w700,
+        GestureDetector(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            Text(
-              subtitle,
-              style: TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black45),
-            ),
-          ],
+              Text(
+                subtitle,
+                style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45),
+              ),
+            ],
+          ),
         )
       ],
     );

@@ -7,6 +7,7 @@ class ButtonWidget extends StatefulWidget {
       required this.onPressed,
       this.isLoading = false,
       this.disabled = false});
+
   final String tittleButton;
   final bool isLoading;
   final bool disabled;
@@ -20,11 +21,9 @@ class _ButtonWidgetState extends State<ButtonWidget> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: widget.isLoading || widget.disabled
-          ? Colors.grey
-          : LightColors.kDarkBlue,
-      borderRadius: const BorderRadius.horizontal(
-          left: Radius.circular(5.0), right: Radius.circular(5.0)),
+      color:
+          widget.isLoading || widget.disabled ? Colors.grey : LightColors.kBlue,
+      borderRadius: BorderRadius.circular(30),
       child: MaterialButton(
         minWidth: double.infinity,
         onPressed: () {
@@ -53,7 +52,10 @@ class TextTitleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       widget.tittleButton,
-      style: const TextStyle(color: LightColors.kLightYellow),
+      style: const TextStyle(
+          color: LightColors.kLightYellow,
+          fontWeight: FontWeight.w700,
+          fontSize: 18),
     );
   }
 }

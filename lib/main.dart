@@ -1,4 +1,5 @@
 import 'package:bizzytasks_app/provider/list_app_provider.dart';
+import 'package:bizzytasks_app/provider/tasks_provider.dart';
 import 'package:bizzytasks_app/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/screens/home_page.dart';
@@ -12,8 +13,11 @@ void main() {
     statusBarColor: Color(0xffffb969), // status bar color
   ));
 
-  return runApp(ChangeNotifierProvider(
-    create: (_) => ListAppProvider(),
+  return runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => ListAppProvider()),
+      ChangeNotifierProvider(create: (_) => TaskProvider()),
+    ],
     child: MyApp(),
   ));
 }

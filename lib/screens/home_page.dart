@@ -2,6 +2,8 @@ import 'package:bizzytasks_app/models/list_app_model.dart';
 import 'package:bizzytasks_app/models/task_model.dart';
 import 'package:bizzytasks_app/models/user_model.dart';
 import 'package:bizzytasks_app/provider/list_app_provider.dart';
+import 'package:bizzytasks_app/provider/tasks_provider.dart';
+import 'package:bizzytasks_app/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/screens/calendar_page.dart';
 import 'package:bizzytasks_app/theme/colors/light_colors.dart';
@@ -35,7 +37,6 @@ class _HomePageState extends State<HomePage> {
   User user = User();
   Task tasks = Task();
   ListApp list = ListApp();
-  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -166,12 +167,7 @@ class _HomePageState extends State<HomePage> {
                   subheading('Mis tareas'),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CalendarPage(),
-                        ),
-                      );
+                      _onTapTodas();
                     },
                     child: HomePage.calendarIcon(),
                   ),
@@ -196,6 +192,7 @@ class _HomePageState extends State<HomePage> {
         TaskColumn(
           icon: Icons.alarm,
           iconBackgroundColor: LightColors.kRed,
+          onTap: () => {_onTapEstado('PE')},
           title: 'Pendiente',
           subtitle: tasks.getTotals(data, 'pendientes').toString() +
               ' tareas por comenzar',
@@ -206,6 +203,7 @@ class _HomePageState extends State<HomePage> {
         TaskColumn(
           icon: Icons.blur_circular,
           iconBackgroundColor: LightColors.kDarkYellow,
+          onTap: () => {_onTapEstado('PR')},
           title: 'En proceso',
           subtitle: tasks.getTotals(data, 'enProceso').toString() +
               ' tareas iniciadas',
@@ -214,6 +212,7 @@ class _HomePageState extends State<HomePage> {
         TaskColumn(
           icon: Icons.check_circle_outline,
           iconBackgroundColor: LightColors.kBlue,
+          onTap: () => {_onTapEstado('FI')},
           title: 'Finalizadas',
           subtitle: tasks.getTotals(data, 'finalizadas').toString() +
               ' tareas terminadas',
@@ -248,10 +247,15 @@ class _HomePageState extends State<HomePage> {
                 return Row(
                   children: [
                     ActiveProjectsCard(
-                        cardColor: LightColors.kGreen,
-                        loadingPercent: _calcPercent(firstCard),
-                        title: firstCard['ca101nombre'],
-                        subtitle: _organizeSubtitle(firstCard)),
+                      cardColor: LightColors.kGreen,
+                      loadingPercent: _calcPercent(firstCard),
+                      title: firstCard['ca101nombre'],
+                      subtitle: _organizeSubtitle(firstCard),
+                      onTap: () => {
+                        _onTapCategoria(firstCard['ca101cod_categoria'],
+                            firstCard['ca101nombre'])
+                      },
+                    ),
                     SizedBox(width: 20.0),
                     if (secondCardIndex < data.length)
                       ActiveProjectsCard(
@@ -259,6 +263,10 @@ class _HomePageState extends State<HomePage> {
                         loadingPercent: _calcPercent(secondCard),
                         title: secondCard['ca101nombre'],
                         subtitle: _organizeSubtitle(secondCard),
+                        onTap: () => {
+                          _onTapCategoria(secondCard['ca101cod_categoria'],
+                              secondCard['ca101nombre'])
+                        },
                       ),
                   ],
                 );
@@ -280,5 +288,48 @@ class _HomePageState extends State<HomePage> {
     return infoCard['finalizadas'].toString() +
         ' fin de ' +
         infoCard['numTareas'].toString();
+  }
+
+  _onTapEstado(estado) {
+    dynamic title = kEstados[estado]?[0];
+    context.read<TaskProvider>().setTasksFilter({
+      'ca102estado': estado,
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CalendarPage(
+          title: title,
+        ),
+      ),
+    );
+  }
+
+  _onTapCategoria(categoria, nombre) {
+    context.read<TaskProvider>().setTasksFilter({
+      'ca102cod_categoria': categoria,
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CalendarPage(
+          title: nombre,
+        ),
+      ),
+    );
+  }
+
+  _onTapTodas() {
+    context.read<TaskProvider>().setTasksFilter({
+      'todos': '',
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CalendarPage(
+          title: "Tareas",
+        ),
+      ),
+    );
   }
 }

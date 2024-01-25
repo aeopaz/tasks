@@ -1,26 +1,46 @@
-import 'package:bizzytasks_app/models/list_app_model.dart';
 import 'package:bizzytasks_app/models/task_model.dart';
 import 'package:bizzytasks_app/provider/list_app_provider.dart';
+import 'package:bizzytasks_app/provider/tasks_provider.dart';
+import 'package:bizzytasks_app/utilities/constants.dart';
+import 'package:bizzytasks_app/widgets/my_date_picker.dart';
 import 'package:bizzytasks_app/widgets/my_drop_down_button.dart';
+import 'package:bizzytasks_app/widgets/my_item_list_drop_down.dart';
 import 'package:flutter/material.dart';
-import 'package:bizzytasks_app/utilities/dates_list.dart';
 import 'package:bizzytasks_app/theme/colors/light_colors.dart';
-import 'package:bizzytasks_app/widgets/calendar_dates.dart';
 import 'package:bizzytasks_app/widgets/task_container.dart';
 import 'package:bizzytasks_app/screens/create_new_task_page.dart';
 import 'package:bizzytasks_app/widgets/back_button.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class CalendarPage extends StatefulWidget {
+  final String title;
+  const CalendarPage({required this.title});
+
   @override
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
   Task tasks = Task();
-  dynamic selectedUsuer = '';
-  dynamic selectedCategorie = '';
+  dynamic selectedUsuerCreat = '';
+  dynamic selectedUsuerAsig = '';
+
+  var startSelectedDate = kDateFormat.format(DateTime.now());
+  var endSelectedDate = kDateFormat.format(DateTime.now());
+
+  void callStartDatePicker() async {
+    var selectDate = await getDatePickerWidget(context, startSelectedDate);
+    setState(() {
+      startSelectedDate = kDateFormat.format(selectDate);
+    });
+  }
+
+  void callEndDatePicker() async {
+    var selectDate = await getDatePickerWidget(context, endSelectedDate);
+    setState(() {
+      endSelectedDate = kDateFormat.format(selectDate);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +57,14 @@ class _CalendarPageState extends State<CalendarPage> {
           child: Column(
             children: <Widget>[
               MyBackButton(),
-              SizedBox(height: 30.0),
+              SizedBox(height: 10.0),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Tareas',
+                      widget.title.length > 10
+                          ? widget.title.substring(0, 10)
+                          : widget.title,
                       style: TextStyle(
                           fontSize: 30.0, fontWeight: FontWeight.w700),
                     ),
@@ -80,34 +102,66 @@ class _CalendarPageState extends State<CalendarPage> {
                 // mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   MyDropDownButton(
-                      items: _itemsDropdownUsuarios(),
-                      value: selectedUsuer,
+                      title: "Creada por: ",
+                      width: 200.0,
+                      items: itemsDropdownUsuarios(context),
+                      value: selectedUsuerCreat,
                       onChanged: (value) {
                         setState(() {
-                          selectedUsuer = value;
+                          selectedUsuerCreat = value;
                         });
                       }),
                   MyDropDownButton(
-                      items: _itemsDropdownCategorias(),
-                      value: selectedCategorie,
+                      title: "Asignada a: ",
+                      width: 200.0,
+                      items: itemsDropdownUsuarios(context),
+                      value: selectedUsuerAsig,
                       onChanged: (value) {
                         setState(() {
-                          selectedCategorie = value;
+                          selectedUsuerAsig = value;
                         });
                       }),
+                  Row(
+                    children: [
+                      myDateWidget(
+                          title: 'Inicial',
+                          onPressed: callStartDatePicker,
+                          dateString: startSelectedDate),
+                      myDateWidget(
+                          title: 'Final',
+                          onPressed: callEndDatePicker,
+                          dateString: endSelectedDate),
+                      //Filtrar datos
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: GestureDetector(
+                          child: Icon(Icons.filter_alt_outlined),
+                          onTap: () {
+                            context.read<TaskProvider>().setTasksFilter({
+                              'ca102cod_usuario_operacion': selectedUsuerCreat,
+                              'ca102cod_usuario_asignado': selectedUsuerAsig,
+                              'ca102fecha_ejecucion_estimada1':
+                                  startSelectedDate,
+                              'ca102fecha_ejecucion_estimada2': endSelectedDate,
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  )
                 ],
               ),
-              SizedBox(height: 30),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'April, 2020',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-                ),
-              ),
-              SizedBox(height: 20.0),
+              // SizedBox(height: 30),
+              // Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: Text(
+              //     'April, 2020',
+              //     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+              //   ),
+              // ),
+              // SizedBox(height: 20.0),
               FutureBuilder(
-                future: tasks.getTasks(contex: context, body: {}),
+                future: tasks.getTasks(context: context),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     dynamic data = snapshot.data;
@@ -127,14 +181,15 @@ class _CalendarPageState extends State<CalendarPage> {
 
   //Listado de tareas
 
-  Expanded _taskasList(tasks) {
+  Widget _taskasList(tasks) {
     dynamic tasksList = tasks['tareas']['data'];
+    if (tasksList.length == 0) return Text('No hay información');
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height / 2,
+              height: MediaQuery.of(context).size.height,
               padding: EdgeInsets.symmetric(vertical: 5.0),
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
@@ -150,47 +205,5 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
       ),
     );
-  }
-
-//Lista de usuarios
-  List<DropdownMenuItem> _itemsDropdownUsuarios() {
-    List<DropdownMenuItem> items = [];
-    var listaUsuarios =
-        context.watch<ListAppProvider>().listApp['data']['listaUsuarios'];
-    DropdownMenuItem new_item = DropdownMenuItem(
-      child: Text('Seleccione...'),
-      value: '',
-    );
-    items.add(new_item);
-    for (var usuario in listaUsuarios) {
-      DropdownMenuItem new_item = DropdownMenuItem(
-        child: Text(usuario['ca100nombre']),
-        value: usuario['ca100cod_usuario'],
-      );
-
-      items.add(new_item);
-    }
-    return items;
-  }
-
-  //Lista de categorías
-  List<DropdownMenuItem> _itemsDropdownCategorias() {
-    List<DropdownMenuItem> items = [];
-    var lista =
-        context.watch<ListAppProvider>().listApp['data']['listaCategorias'];
-    DropdownMenuItem new_item = DropdownMenuItem(
-      child: Text('Seleccione...'),
-      value: '',
-    );
-    items.add(new_item);
-    for (var l in lista) {
-      DropdownMenuItem new_item = DropdownMenuItem(
-        child: Text(l['ca101nombre']),
-        value: l['ca101cod_categoria'],
-      );
-
-      items.add(new_item);
-    }
-    return items;
   }
 }

@@ -76,9 +76,9 @@ class _LoginPageState extends State<LoginPage> {
                 validateField();
               },
             ),
-            // SizedBox(
-            //   height: 50.0,
-            // ),
+            SizedBox(
+              height: 50.0,
+            ),
             ButtonWidget(
                 tittleButton: 'Ingresar',
                 isLoading: isLoading,
@@ -94,8 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                   });
                   if (token != null) {
                     await user.setToken(token);
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
                     Navigator.pushReplacementNamed(context, HomePage.id);
                   }
                 })

@@ -1,5 +1,6 @@
 import 'package:bizzytasks_app/theme/colors/light_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 //No se esta utilizando
 const kTextFieldDecorationLogin = InputDecoration(
@@ -23,3 +24,5 @@ const kPrioridad = {
   'M': ['Medio', Icons.warning],
   'B': ['Bajo', Icons.low_priority],
 };
+
+DateFormat kDateFormat = DateFormat('yyyy-MM-dd');
