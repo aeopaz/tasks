@@ -8,12 +8,15 @@ import 'package:bizzytasks_app/widgets/my_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/widgets/back_button.dart';
 
-class CreateNewTaskPage extends StatefulWidget {
+class EditTaskPage extends StatefulWidget {
+  final int idTask;
+
+  EditTaskPage({required this.idTask});
   @override
-  State<CreateNewTaskPage> createState() => _CreateNewTaskPageState();
+  State<EditTaskPage> createState() => _EditTaskPageState();
 }
 
-class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
+class _EditTaskPageState extends State<EditTaskPage> {
   Task task = Task();
   var isLoading = false;
   var isDiseabledButton = false;
@@ -31,6 +34,32 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
     setState(() {
       _selectDateEndTask = kDateFormat.format(selectDate);
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getTasks();
+  }
+
+  void _getTasks() async {
+    dynamic response =
+        await task.getTask(context: context, idTask: widget.idTask.toString());
+
+    if (response != null) {
+      dynamic data = response['data'];
+      setState(() {
+        _selectedCategorie = data['ca102cod_categoria'];
+        _selectedUser = data['ca102cod_usuario_asignado'];
+        _selectedPriority = data['ca102prioridad'];
+        _selectedFrecuencie = data['ca102frecuencia_ejecucion'];
+        _selectedRepeatDay = data['ca102dia_semana_o_mes_ejecucion'];
+        _selectDateEndTask = data['ca102fecha_ejecucion_estimada'];
+      });
+      _title.text = data['ca102nombre'];
+      _description.text = data['ca102descripcion'];
+    }
   }
 
   @override
@@ -56,7 +85,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Crear nueva tarea',
+                        _title.text,
                         style: TextStyle(
                             fontSize: 25.0, fontWeight: FontWeight.w700),
                       ),
@@ -181,7 +210,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                           alignment: Alignment.center,
                           width: width,
                           child: ButtonWidget(
-                              tittleButton: 'Crear tarea',
+                              tittleButton: 'Actualizar tarea',
                               isLoading: isLoading,
                               disabled: isDiseabledButton,
                               onPressed: () async {

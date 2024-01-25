@@ -15,8 +15,9 @@ class NetworHelper {
     dynamic headers = await getHeaders();
     http.Response response = await http.post(Uri.parse(kServer + url),
         body: jsonEncode(body), headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode <= 204) {
       String data = response.body;
+      showServerResponse(response);
       return jsonDecode(data);
     } else {
       showServerResponse(response);
@@ -27,8 +28,9 @@ class NetworHelper {
     dynamic headers = await getHeaders();
     http.Response response =
         await http.get(Uri.parse(kServer + url), headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode <= 204) {
       String data = response.body;
+      showServerResponse(response);
       return jsonDecode(data);
     } else {
       showServerResponse(response);
@@ -48,21 +50,48 @@ class NetworHelper {
   }
 
   showServerResponse(response) {
-    String data = response.body;
-    String message = '';
+    dynamic data = jsonDecode(response.body);
+    int nivel = data['nivel'] == null ? 2 : data['nivel'];
+    if (nivel < 3) {
+      List<Widget> message = [];
+      int statusCode = response.statusCode;
+      String titleMessage = '';
 
-    if (response.statusCode == 422) {
-      jsonDecode(data)['errors'].forEach(
-          (key, value) => message = '$message $key: ' + value[0] + '\n');
-    } else {
-      message = jsonDecode(data)['message'];
+      if (statusCode >= 400) {
+        titleMessage = "Error";
+        if (statusCode == 422) {
+          data['errors'].forEach(
+            (key, value) => message.add(
+              Row(
+                children: [
+                  Container(
+                    constraints: BoxConstraints(maxWidth: 200),
+                    child: Text(
+                      '\u2022 ' + key + ': ' + value[0],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        } else {
+          message.add(Text(data['message']));
+        }
+      } else {
+        titleMessage = 'OK';
+        message.add(Text(data['message']));
+      }
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyAlertDialog(
+              titleMessage,
+              Column(
+                children: message,
+              ));
+        },
+      );
     }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MyAlertDialog('Error', Text(message));
-      },
-    );
   }
 }

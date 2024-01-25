@@ -17,7 +17,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   User user = User();
-  String email = '', password = '';
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
   bool isLoading = false;
   bool isDiseabledButton = true;
 
@@ -60,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
             // ),
             MyTextField(
               label: "Email",
+              controller: email,
               icon: Icon(Icons.email),
               inputType: TextInputType.emailAddress,
               onChanged: (value) {
@@ -69,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             MyTextField(
               label: "Contraseña",
+              controller: password,
               icon: Icon(Icons.lock),
               obscureText: true,
               onChanged: (value) {
@@ -88,7 +91,9 @@ class _LoginPageState extends State<LoginPage> {
                     isLoading = true;
                   });
                   dynamic token = await user.getToken(
-                      context: context, email: email, password: password);
+                      context: context,
+                      email: email.text,
+                      password: password.text);
                   setState(() {
                     isLoading = false;
                   });

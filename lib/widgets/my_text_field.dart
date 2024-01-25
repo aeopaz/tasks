@@ -8,12 +8,14 @@ class MyTextField extends StatelessWidget {
   final Icon icon;
   final TextInputType inputType;
   final Function(dynamic) onChanged;
+  final TextEditingController controller;
   MyTextField(
       {required this.label,
       this.maxLines = 1,
       this.minLines = 1,
       this.obscureText = false,
       this.inputType = TextInputType.name,
+      required this.controller,
       required this.onChanged,
       this.icon = const Icon(Icons.abc)}); //Lo Modifique
 
@@ -26,6 +28,7 @@ class MyTextField extends StatelessWidget {
       maxLines: maxLines,
       obscureText: obscureText,
       onChanged: onChanged,
+      controller: controller,
       decoration: InputDecoration(
           suffixIcon: icon == null ? null : icon,
           labelText: label,

@@ -33,11 +33,22 @@ class Task {
     return decodeData;
   }
 
+//Crear tarea
   Future<dynamic> storeTask({context, body}) async {
     NetworHelper networHelper =
         NetworHelper(url: '/tasks', context: context, body: body);
 
     var decodeData = await networHelper.postData();
+
+    return decodeData;
+  }
+
+  //Consultar tarea
+  Future<dynamic> getTask({context, idTask}) async {
+    NetworHelper networHelper =
+        NetworHelper(url: '/tasks/' + idTask, context: context, body: {});
+
+    var decodeData = await networHelper.getData();
 
     return decodeData;
   }

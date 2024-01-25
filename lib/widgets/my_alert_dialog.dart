@@ -8,7 +8,7 @@ class MyAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
-      content: widgetMessage,
+      content: SingleChildScrollView(child: widgetMessage),
       actions: [
         TextButton(
           child: Text('Cerrar'),
