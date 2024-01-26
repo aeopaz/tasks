@@ -37,6 +37,19 @@ class NetworHelper {
     }
   }
 
+  Future putData() async {
+    dynamic headers = await getHeaders();
+    http.Response response = await http.put(Uri.parse(kServer + url),
+        headers: headers, body: jsonEncode(body));
+    if (response.statusCode <= 204) {
+      String data = response.body;
+      showServerResponse(response);
+      return jsonDecode(data);
+    } else {
+      showServerResponse(response);
+    }
+  }
+
   getHeaders() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     dynamic token = prefs.getString('token');
@@ -67,7 +80,10 @@ class NetworHelper {
                   Container(
                     constraints: BoxConstraints(maxWidth: 200),
                     child: Text(
-                      '\u2022 ' + key + ': ' + value[0],
+                      '\u2022 ' +
+                          key.substring(5, key.length) +
+                          ': ' +
+                          value[0],
                     ),
                   )
                 ],
@@ -86,10 +102,19 @@ class NetworHelper {
         context: context,
         builder: (BuildContext context) {
           return MyAlertDialog(
-              titleMessage,
-              Column(
-                children: message,
-              ));
+            title: titleMessage,
+            widgetMessage: Column(
+              children: message,
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cerrar'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
         },
       );
     }

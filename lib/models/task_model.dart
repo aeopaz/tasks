@@ -52,4 +52,24 @@ class Task {
 
     return decodeData;
   }
+
+  //Actualizar tarea
+  Future<dynamic> updateTask({context, idTask, body}) async {
+    NetworHelper networHelper =
+        NetworHelper(url: '/tasks/' + idTask, context: context, body: body);
+
+    var decodeData = await networHelper.putData();
+
+    return decodeData;
+  }
+
+  //Actualizar tarea
+  Future<dynamic> updateStatus({context, idTask, body}) async {
+    NetworHelper networHelper = NetworHelper(
+        url: '/tasks/cambiarEstado/' + idTask, context: context, body: body);
+
+    var decodeData = await networHelper.putData();
+
+    return decodeData;
+  }
 }

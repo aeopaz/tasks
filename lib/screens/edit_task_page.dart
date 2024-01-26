@@ -1,4 +1,5 @@
 import 'package:bizzytasks_app/models/task_model.dart';
+import 'package:bizzytasks_app/screens/task_history_page.dart';
 import 'package:bizzytasks_app/utilities/constants.dart';
 import 'package:bizzytasks_app/widgets/button_widget.dart';
 import 'package:bizzytasks_app/widgets/my_date_picker.dart';
@@ -25,6 +26,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
   dynamic _selectedPriority = '';
   dynamic _selectedFrecuencie = 0;
   dynamic _selectedRepeatDay = 0;
+  dynamic _idTask = 0;
+  dynamic _taskData = '';
   TextEditingController _title = TextEditingController();
   TextEditingController _description = TextEditingController();
 
@@ -48,17 +51,19 @@ class _EditTaskPageState extends State<EditTaskPage> {
         await task.getTask(context: context, idTask: widget.idTask.toString());
 
     if (response != null) {
-      dynamic data = response['data'];
+      _taskData = response['data'];
+
       setState(() {
-        _selectedCategorie = data['ca102cod_categoria'];
-        _selectedUser = data['ca102cod_usuario_asignado'];
-        _selectedPriority = data['ca102prioridad'];
-        _selectedFrecuencie = data['ca102frecuencia_ejecucion'];
-        _selectedRepeatDay = data['ca102dia_semana_o_mes_ejecucion'];
-        _selectDateEndTask = data['ca102fecha_ejecucion_estimada'];
+        _idTask = _taskData['ca102cod_tarea'].toString();
+        _selectedCategorie = _taskData['ca102cod_categoria'];
+        _selectedUser = _taskData['ca102cod_usuario_asignado'];
+        _selectedPriority = _taskData['ca102prioridad'];
+        _selectedFrecuencie = _taskData['ca102frecuencia_ejecucion'];
+        _selectedRepeatDay = _taskData['ca102dia_semana_o_mes_ejecucion'];
+        _selectDateEndTask = _taskData['ca102fecha_ejecucion_estimada'];
       });
-      _title.text = data['ca102nombre'];
-      _description.text = data['ca102descripcion'];
+      _title.text = _taskData['ca102nombre'];
+      _description.text = _taskData['ca102descripcion'];
     }
   }
 
@@ -198,6 +203,25 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   SizedBox(height: 20),
                 ],
               ),
+              if (_selectedFrecuencie > 0)
+                TextButton.icon(
+                  onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TaskHistoryPage(taskHistory: _taskData),
+                        ))
+                  },
+                  icon: Icon(Icons.history),
+                  label: Text(
+                    'Ver historial de repeticiones',
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ),
+              SizedBox(
+                height: 20.0,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -218,8 +242,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                                   isLoading = true;
                                   isDiseabledButton = true;
                                 });
-                                dynamic result = await task
-                                    .storeTask(context: context, body: {
+                                dynamic body = {
                                   'ca102nombre': _title.text,
                                   'ca102cod_categoria': _selectedCategorie,
                                   'ca102descripcion': _description.text,
@@ -231,23 +254,16 @@ class _EditTaskPageState extends State<EditTaskPage> {
                                   'ca102dia_semana_o_mes_ejecucion':
                                       _selectedRepeatDay,
                                   'ca102cod_usuario_asignado': _selectedUser
-                                });
+                                };
+                                dynamic result = await task.updateTask(
+                                    idTask: _idTask,
+                                    context: context,
+                                    body: body);
+
                                 setState(() {
                                   isLoading = false;
                                   isDiseabledButton = false;
                                 });
-
-                                if (result != null) {
-                                  setState(() {
-                                    _title.text = '';
-                                    _selectedCategorie = '';
-                                    _description.text = '';
-                                    _selectedPriority = '';
-                                    _selectedFrecuencie = 0;
-                                    _selectedRepeatDay = 0;
-                                    _selectedUser = '';
-                                  });
-                                }
                               }),
                         )
                       ],

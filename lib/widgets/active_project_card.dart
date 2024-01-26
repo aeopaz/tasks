@@ -1,3 +1,4 @@
+import 'package:bizzytasks_app/utilities/text_format.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
@@ -79,14 +80,5 @@ class ActiveProjectsCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  organizeTitle(title) {
-    String new_title =
-        title[0].toUpperCase() + title.substring(1, title.length).toLowerCase();
-    if (new_title.length > 10) {
-      return new_title.substring(0, 10) + '...';
-    }
-    return new_title;
   }
 }

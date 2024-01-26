@@ -3,20 +3,16 @@ import 'package:flutter/material.dart';
 class MyAlertDialog extends StatelessWidget {
   final String title;
   final Widget widgetMessage;
-  MyAlertDialog(this.title, this.widgetMessage);
+  final dynamic actions;
+  MyAlertDialog(
+      {required this.title,
+      required this.widgetMessage,
+      required this.actions});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
-      content: SingleChildScrollView(child: widgetMessage),
-      actions: [
-        TextButton(
-          child: Text('Cerrar'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
+        title: Text(title),
+        content: SingleChildScrollView(child: widgetMessage),
+        actions: actions);
   }
 }

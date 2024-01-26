@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
               icon: Icon(Icons.email),
               inputType: TextInputType.emailAddress,
               onChanged: (value) {
-                email = value;
+                // email = value;
                 validateField();
               },
             ),
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
               icon: Icon(Icons.lock),
               obscureText: true,
               onChanged: (value) {
-                password = value;
+                // password = value;
                 validateField();
               },
             ),
@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
 
   validateField() {
     setState(() {
-      if (email == '' || password == '') {
+      if (email.text == '' || password.text == '') {
         isDiseabledButton = true;
       } else {
         isDiseabledButton = false;
