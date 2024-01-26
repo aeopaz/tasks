@@ -17,8 +17,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   User user = User();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
   bool isDiseabledButton = true;
 
@@ -26,6 +26,14 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     checkToken();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
             // ),
             MyTextField(
               label: "Email",
-              controller: email,
+              controller: _emailController,
               icon: Icon(Icons.email),
               inputType: TextInputType.emailAddress,
               onChanged: (value) {
@@ -71,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             MyTextField(
               label: "Contraseña",
-              controller: password,
+              controller: _passwordController,
               icon: Icon(Icons.lock),
               obscureText: true,
               onChanged: (value) {
@@ -92,8 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                   });
                   dynamic token = await user.getToken(
                       context: context,
-                      email: email.text,
-                      password: password.text);
+                      email: _emailController.text,
+                      password: _passwordController.text);
                   setState(() {
                     isLoading = false;
                   });
@@ -110,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
 
   validateField() {
     setState(() {
-      if (email.text == '' || password.text == '') {
+      if (_emailController.text == '' || _passwordController.text == '') {
         isDiseabledButton = true;
       } else {
         isDiseabledButton = false;

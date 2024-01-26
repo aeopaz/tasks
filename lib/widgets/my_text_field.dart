@@ -29,6 +29,7 @@ class MyTextField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       controller: controller,
+      onEditingComplete: () => print('asdfasd'),
       decoration: InputDecoration(
           suffixIcon: icon == null ? null : icon,
           labelText: label,

@@ -22,8 +22,8 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
   dynamic _selectedPriority = '';
   dynamic _selectedFrecuencie = 0;
   dynamic _selectedRepeatDay = 0;
-  TextEditingController _title = TextEditingController();
-  TextEditingController _description = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
 
   var _selectDateEndTask = kDateFormat.format(DateTime.now());
   void callEndDateTaskPicker() async {
@@ -31,6 +31,14 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
     setState(() {
       _selectDateEndTask = kDateFormat.format(selectDate);
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -65,9 +73,9 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                   SizedBox(height: 5.0),
                   MyTextField(
                     label: 'Título',
-                    controller: _title,
+                    controller: _titleController,
                     onChanged: (value) {
-                      // _title = value;
+                      // _titleController = value;
                     },
                   ),
                   SizedBox(
@@ -75,11 +83,11 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                   ),
                   MyTextField(
                     label: 'Description',
-                    controller: _description,
+                    controller: _descriptionController,
                     minLines: 3,
                     maxLines: 3,
                     onChanged: (value) {
-                      // _description = value;
+                      // _descriptionController = value;
                     },
                   ),
                   SizedBox(
@@ -191,9 +199,10 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                                 });
                                 dynamic result = await task
                                     .storeTask(context: context, body: {
-                                  'ca102nombre': _title.text,
+                                  'ca102nombre': _titleController.text,
                                   'ca102cod_categoria': _selectedCategorie,
-                                  'ca102descripcion': _description.text,
+                                  'ca102descripcion':
+                                      _descriptionController.text,
                                   'ca102prioridad': _selectedPriority,
                                   'ca102fecha_ejecucion_estimada':
                                       _selectDateEndTask,
@@ -210,9 +219,9 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
                                 if (result != null) {
                                   setState(() {
-                                    _title.text = '';
+                                    _titleController.text = '';
                                     _selectedCategorie = '';
-                                    _description.text = '';
+                                    _descriptionController.text = '';
                                     _selectedPriority = '';
                                     _selectedFrecuencie = 0;
                                     _selectedRepeatDay = 0;
