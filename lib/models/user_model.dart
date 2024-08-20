@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:bizzytasks_app/helpers/networking.dart';
+import 'package:bizzytasks_app/provider/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 
 class User {
@@ -48,5 +50,7 @@ class User {
   Future<dynamic> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
+    // dynamic info = Provider.of<UserProvider>(context, listen: false).userInfo;
+    // await pusher.unsubscribe("my-channel");
   }
 }

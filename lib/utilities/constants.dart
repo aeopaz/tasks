@@ -12,6 +12,7 @@ const kTextFieldDecorationLogin = InputDecoration(
 );
 
 const kServer = 'http://192.168.18.227:8000/api/mobile';
+const kServerWebsockets = 'http://192.168.18.227:8000/api/mobile/ws/auth';
 
 const kEstados = {
   'PE': ['Pendiente', LightColors.kRed],

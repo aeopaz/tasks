@@ -1,8 +1,10 @@
+import 'package:bizzytasks_app/helpers/pusher_client.dart';
 import 'package:bizzytasks_app/models/list_app_model.dart';
 import 'package:bizzytasks_app/models/task_model.dart';
 import 'package:bizzytasks_app/models/user_model.dart';
 import 'package:bizzytasks_app/provider/list_app_provider.dart';
 import 'package:bizzytasks_app/provider/tasks_provider.dart';
+import 'package:bizzytasks_app/provider/user_provider.dart';
 import 'package:bizzytasks_app/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/screens/calendar_page.dart';
@@ -12,6 +14,8 @@ import 'package:bizzytasks_app/widgets/task_column.dart';
 import 'package:bizzytasks_app/widgets/active_project_card.dart';
 import 'package:bizzytasks_app/widgets/top_container/top_container.dart';
 import 'package:bizzytasks_app/widgets/top_container/user_info.dart';
+import 'package:provider/provider.dart';
+import 'package:bizzytasks_app/helpers/notifications.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -37,17 +41,49 @@ class _HomePageState extends State<HomePage> {
   User user = User();
   Task tasks = Task();
   ListApp list = ListApp();
+  bool isLoadingInfoUser = false;
 
   @override
   void initState() {
     super.initState();
+    _getUserInfo();
     _getListApp();
+    _loadNotifications();
   }
 
 //Obtener las listas que necesita la app
   void _getListApp() async {
     dynamic lists = await list.getList(context: context);
     context.read<ListAppProvider>().setListApp(lists);
+  }
+
+  //Obtener información del usuario
+  void _getUserInfo() async {
+    setState(() {
+      isLoadingInfoUser = true;
+    });
+    dynamic userInfo = await user.getUser();
+    context.read<UserProvider>().setUserInfo(userInfo['data']['user']);
+    _conectPusher();
+    setState(() {
+      isLoadingInfoUser = false;
+    });
+  }
+
+//Conectarse a websockets
+  void _conectPusher() async {
+    dynamic info = Provider.of<UserProvider>(context, listen: false).userInfo;
+    MyPusherClient myPusherClient = MyPusherClient(
+        channelName:
+            'private-App.Models.User.' + info['ca100cod_usuario'].toString(),
+        eventName: 'AdministradorEvent');
+    myPusherClient.onConnect();
+  }
+
+  _loadNotifications() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // Aquí inicializamos la instancia de notificaciones
+    await initNotifications();
   }
 
   @override
@@ -66,15 +102,15 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Icon(Icons.menu,
-                            color: LightColors.kDarkBlue, size: 30.0),
-                        Icon(Icons.search,
-                            color: LightColors.kDarkBlue, size: 25.0),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: <Widget>[
+                    //     Icon(Icons.menu,
+                    //         color: LightColors.kDarkBlue, size: 30.0),
+                    //     Icon(Icons.search,
+                    //         color: LightColors.kDarkBlue, size: 25.0),
+                    //   ],
+                    // ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 0, vertical: 0.0),
@@ -100,18 +136,9 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           // Información Usuario
-                          FutureBuilder(
-                            future: user.getUser(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return userInfo(context, snapshot.data);
-                              }
-                              return CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.black),
-                              );
-                            },
-                          ),
+                          isLoadingInfoUser
+                              ? CircularProgressIndicator()
+                              : userInfo(context),
                         ],
                       ),
                     )

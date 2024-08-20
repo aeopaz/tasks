@@ -1,7 +1,7 @@
 import 'package:bizzytasks_app/models/task_model.dart';
 import 'package:bizzytasks_app/screens/edit_task_page.dart';
 import 'package:bizzytasks_app/utilities/constants.dart';
-import 'package:bizzytasks_app/utilities/date.dart';
+import 'package:bizzytasks_app/utilities/custom_date_format.dart';
 import 'package:bizzytasks_app/utilities/text_format.dart';
 import 'package:bizzytasks_app/widgets/button_widget.dart';
 import 'package:bizzytasks_app/widgets/my_text_field.dart';

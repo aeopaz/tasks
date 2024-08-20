@@ -68,13 +68,14 @@ class _CalendarPageState extends State<CalendarPage> {
                       style: TextStyle(
                           fontSize: 30.0, fontWeight: FontWeight.w700),
                     ),
-                    Container(
-                      height: 40.0,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: LightColors.kGreen,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                    CircleAvatar(
+                      radius: 30.0,
+                      // height: 40.0,
+                      // width: 120,
+                      // decoration: BoxDecoration(
+                      //   color: LightColors.kGreen,
+                      //   borderRadius: BorderRadius.circular(100),
+                      // ),
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
@@ -85,13 +86,14 @@ class _CalendarPageState extends State<CalendarPage> {
                           );
                         },
                         child: Center(
-                          child: Text(
-                            'Crear tarea',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16),
-                          ),
+                          child: Icon(Icons.add, color: Colors.white, size: 40),
+                          // child: Text(
+                          //   'Crear tarea',
+                          //   style: TextStyle(
+                          //       color: Colors.white,
+                          //       fontWeight: FontWeight.w700,
+                          //       fontSize: 16),
+                          // ),
                         ),
                       ),
                     ),

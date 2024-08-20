@@ -256,7 +256,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   Container(
                     constraints: BoxConstraints(maxWidth: width / 2),
                     child: ButtonWidget(
-                        tittleButton: 'Actualizar tarea',
+                        tittleButton: 'Actualizar',
                         isLoading: isLoading,
                         disabled: isDiseabledButton,
                         onPressed: () async {

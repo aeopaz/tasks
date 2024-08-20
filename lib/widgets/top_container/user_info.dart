@@ -1,13 +1,15 @@
 import 'package:bizzytasks_app/models/user_model.dart';
+import 'package:bizzytasks_app/provider/user_provider.dart';
 import 'package:bizzytasks_app/screens/login_page.dart';
 import 'package:bizzytasks_app/theme/colors/light_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 User user = User();
 
 //Información del usuario
-Column userInfo(context, data) {
-  dynamic info = data['data']['user'];
+Column userInfo(BuildContext context) {
+  dynamic info = Provider.of<UserProvider>(context, listen: false).userInfo;
   List<String> nombre = info['ca100nombre'].split(' ');
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,

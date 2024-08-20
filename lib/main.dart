@@ -1,5 +1,6 @@
 import 'package:bizzytasks_app/provider/list_app_provider.dart';
 import 'package:bizzytasks_app/provider/tasks_provider.dart';
+import 'package:bizzytasks_app/provider/user_provider.dart';
 import 'package:bizzytasks_app/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzytasks_app/screens/home_page.dart';
@@ -17,6 +18,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => ListAppProvider()),
       ChangeNotifierProvider(create: (_) => TaskProvider()),
+      ChangeNotifierProvider(create: (_) => UserProvider()),
     ],
     child: MyApp(),
   ));

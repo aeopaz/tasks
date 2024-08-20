@@ -189,7 +189,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                           alignment: Alignment.center,
                           width: width,
                           child: ButtonWidget(
-                              tittleButton: 'Crear tarea',
+                              tittleButton: 'Crear',
                               isLoading: isLoading,
                               disabled: isDiseabledButton,
                               onPressed: () async {
